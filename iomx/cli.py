@@ -47,6 +47,7 @@ def main(argv: Optional[list] = None) -> None:
 
     # tui command
     sub.add_parser("tui", help="Open the Textual TUI (requires textual)")
+    sub.add_parser("lsserial", help="List serial ports (uses pyserial if available)")
 
     # version
     sub.add_parser("version", help="Show version and exit")
@@ -68,6 +69,24 @@ def main(argv: Optional[list] = None) -> None:
 
     if args.command == "tui":
         run_tui()
+        return
+
+    if args.command == "lsserial":
+        try:
+            from iomx.commands.lsserial import list_serial_ports
+        except Exception:
+            print("lsserial utility requires 'pyserial' for best results. Install with: pip install pyserial")
+            # still try to import the module to run fallback
+            try:
+                from iomx.commands.lsserial import list_serial_ports
+            except Exception:
+                return
+        ports = list_serial_ports()
+        if not ports:
+            print("No serial ports found")
+        else:
+            for p in ports:
+                print(p)
         return
 
     if args.command == "version":
