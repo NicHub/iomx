@@ -2,7 +2,7 @@
 
 **One data multiplexer to watch them all**
 
-_iomx_ is a lightweight CLI tool, designed to run smoothly localy or over SSH, to multiplex, inspect, and log multi-protocol IoT data streams.
+_iomx_ is a lightweight CLI tool, designed to run smoothly locally or over SSH, to multiplex, inspect, and log multi-protocol IoT data streams.
 
 It provides a simple, unified way to monitor data from **serial devices, MQTT brokers, WebSocket endpoints**, and more.
 
@@ -32,6 +32,28 @@ Especially useful when working remotely over SSH.
 
 **iomx is currently in early development (pre-alpha stage)**
 
----
+## Documentation
 
-Copyright (C) 2025, GPL-3.0-or-later, Nicolas Jeanmonod, ouilogique.com
+Full documentation is available in the `docs/` directory. It uses Sphinx with MyST (Markdown) so you can author pages in Markdown and build HTML with Sphinx or publish on ReadTheDocs.
+
+The CLI uses a resource-first syntax. Examples are documented in `docs/usage.md`.
+
+```
+iomx version
+```
+
+If you previously used `iomx lsserial`, update your usage to `iomx serial ls`.
+
+## Installation notes
+
+Recommended dependencies (some commands are optional):
+
+```
+pip install -r requirements.txt
+```
+
+requirements.txt includes: `textual`, `pyserial`, `pyperclip` (clipboard helper).
+
+## Contributing
+
+If you’d like to add more serial commands (connect/monitor) or other resource subcommands (mqtt, websocket), the CLI is structured to make that straightforward: add a subparser under the resource, and wire it to `iomx.commands.<resource>`.

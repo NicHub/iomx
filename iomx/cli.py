@@ -48,7 +48,11 @@ def main(argv: Optional[list] = None) -> None:
 
     # tui command
     sub.add_parser("tui", help="Open the Textual TUI (requires textual)")
-    sub.add_parser("lsserial", help="List serial ports (uses pyserial if available)")
+
+    # resource-oriented commands (recommended): e.g. `iomx serial ls`
+    serial_parser = sub.add_parser("serial", help="Serial device commands")
+    serial_sub = serial_parser.add_subparsers(dest="serial_command")
+    serial_sub.add_parser("ls", help="List serial ports (uses pyserial if available)")
 
     # version
     sub.add_parser("version", help="Show version and exit")
@@ -71,12 +75,16 @@ def main(argv: Optional[list] = None) -> None:
     if args.command == "tui":
         run_tui()
         return
+    if args.command == "serial":
+        # currently only `ls` is implemented
+        if getattr(args, "serial_command", None) != "ls":
+            print("Please specify a serial subcommand. Try: 'iomx serial ls'")
+            return
 
-    if args.command == "lsserial":
         try:
             import iomx.commands.lsserial as lsmod
         except ImportError as e:
-            print("lsserial utility requires 'pyserial' for best results. Install with: pip install pyserial")
+            print("serial ls requires 'pyserial' for best results. Install with: pip install pyserial")
             print(f"ImportError: {e}")
             return
         except Exception:
