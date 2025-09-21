@@ -13,7 +13,15 @@ To build locally:
 
 ```bash
 pip install -r docs/requirements.txt
-sphinx-build -b html docs/ docs/_build/html
+sphinx-build -b html docs/ docs/_build/html && open docs/_build/html/index.html
 ```
 
 See `usage.md` for CLI examples and commands.
+
+```{toctree}
+:maxdepth: 2
+:caption: Contents
+
+installation
+usage
+```
