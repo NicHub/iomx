@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "iomx"
+version = "0.1.0"
+description = "Lightweight CLI tool to multiplex, inspect, and log multi-protocol IoT streams"
+authors = [{name = "Your Name"}]
+license = {text = "MIT"}
+dependencies = ["textual>=0.20.0"]
+
+[project.scripts]
+iomx = "iomx.cli:main"

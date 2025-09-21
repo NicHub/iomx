@@ -30,6 +30,8 @@ Especially useful when working remotely over SSH.
 
 ## ⚠️ Heads up
 
-iomx is still just a concept — mainly living in my head, in ChatGPT’s head, and in this README.
-Think of it as **pre-alpha / proof-of-concept**.
-Code will come later.
+**iomx is currently in early development (pre-alpha stage)**
+
+---
+
+Copyright (C) 2025, GPL-3.0-or-later, Nicolas Jeanmonod, ouilogique.com
