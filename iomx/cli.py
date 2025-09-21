@@ -25,7 +25,7 @@ def run_tui() -> None:
     try:
         # Import the TUI runner from package; may raise ImportError if textual not installed
         from iomx.tui.app import run_tui as _run
-    except Exception as e:  # ImportError or other
+    except Exception:  # ImportError or other
         print(
             "Textual or TUI modules are not available. Install 'textual' and try again."
         )
@@ -54,6 +54,10 @@ def main(argv: Optional[list] = None) -> None:
     serial_sub = serial_parser.add_subparsers(dest="serial_command")
     serial_sub.add_parser("ls", help="List serial ports (uses pyserial if available)")
 
+    # mqtt and ws top-level commands (default action is a dummy main)
+    sub.add_parser("mqtt", help="MQTT broker commands (connect/publish)")
+    sub.add_parser("ws", help="WebSocket (ws) commands")
+
     # version
     sub.add_parser("version", help="Show version and exit")
 
@@ -76,15 +80,17 @@ def main(argv: Optional[list] = None) -> None:
         run_tui()
         return
     if args.command == "serial":
-        # currently only `ls` is implemented
-        if getattr(args, "serial_command", None) != "ls":
+        # default to `ls` when no serial subcommand is provided
+        cmd = getattr(args, "serial_command", None) or "ls"
+        if cmd != "ls":
             print("Please specify a serial subcommand. Try: 'iomx serial ls'")
             return
 
         try:
-            import iomx.commands.lsserial as lsmod
+            # new structure: commands.serial.ls
+            import iomx.commands.serial.ls as lsmod
         except ImportError as e:
-            print("serial ls requires 'pyserial' for best results. Install with: pip install pyserial")
+            print("serial ls requires 'pyserial'. Install with: pip install pyserial")
             print(f"ImportError: {e}")
             return
         except Exception:
@@ -156,6 +162,36 @@ def main(argv: Optional[list] = None) -> None:
                 print(f"\n# COPIED TO CLIPBOARD (fallback): {last}")
             else:
                 print(f"\n# COULD NOT COPY TO CLIPBOARD — last port: {last}")
+        return
+
+    if args.command == "mqtt":
+        try:
+            import iomx.commands.mqtt as mqttmod
+        except Exception:
+            print("Failed to import mqtt commands module")
+            return
+        try:
+            mqttmod.main()
+        except Exception:
+            import traceback
+
+            print("Error while running mqtt main():")
+            traceback.print_exc()
+        return
+
+    if args.command == "ws":
+        try:
+            import iomx.commands.ws as wsmod
+        except Exception:
+            print("Failed to import ws commands module")
+            return
+        try:
+            wsmod.main()
+        except Exception:
+            import traceback
+
+            print("Error while running ws main():")
+            traceback.print_exc()
         return
 
     if args.command == "version":

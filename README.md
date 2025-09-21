@@ -4,12 +4,12 @@
 
 _iomx_ is a lightweight CLI tool, designed to run smoothly locally or over SSH, to multiplex, inspect, and log multi-protocol IoT data streams.
 
-It provides a simple, unified way to monitor data from **serial devices, MQTT brokers, WebSocket endpoints**, and more.
+It provides a simple, unified way to monitor data from **serial devices, MQTT brokers, WebSocket (ws) endpoints**, and more.
 
 ## ✨ Features
 
 -   Multiplex multiple interfaces with a single tool
--   Supported protocols: Serial, MQTT, WebSocket — designed to be extensible
+-   Supported protocols: Serial, MQTT, WebSocket (ws) — designed to be extensible
 -   Output to console or structured logs (JSON, JSONL, YAML, plain text)
 -   Lightweight and dependency-minimal (pure Python 3)
 -   Ideal for **debugging, testing, and monitoring IoT devices**
@@ -56,4 +56,4 @@ requirements.txt includes: `textual`, `pyserial`, `pyperclip` (clipboard helper)
 
 ## Contributing
 
-If you’d like to add more serial commands (connect/monitor) or other resource subcommands (mqtt, websocket), the CLI is structured to make that straightforward: add a subparser under the resource, and wire it to `iomx.commands.<resource>`.
+If you’d like to add more serial commands (connect/monitor) or other resource subcommands (mqtt, ws), the CLI is structured to make that straightforward: add a subparser under the resource, and wire it to `iomx.commands.<resource>`.

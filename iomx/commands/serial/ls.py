@@ -1,31 +1,7 @@
 """
+ls.py
 
-lsserial.py
-
-This script lists the serial devices connected in verbose and summarized lists.
-It is tested on Python3 only.
-If you prefer a single line command, there are some alternatives below.
-
-# Prerequisites
-pip install pyserial
-or
-python3 -m pip install pyserial
-
-# Create alias in ~/.bash_profile or ~/.zshrc
-alias lsserial='python3 ~/lsserial.py'
-
-# If you only need the summary, you just need to run this command in bash
-python3 -m serial.tools.list_ports
-
-# Alternate solution in pure bash for macOS
-alias lsserial_b='ls -1 /dev/tty.* | grep -v -e Bluetooth -e Jabra'
-
-# Alternate solution in pure bash for Raspberry Pi OS
-alias lsserial_b='ls -1 /dev/tty* | grep tty[A-Z] | grep -v -e Bluetooth -e Jabra'
-
-# Ubuntu & Raspberry Pi OS serial diagnostic with this command
-dmesg
-
+Moved from iomx/commands/lsserial.py to match command structure: `iomx serial ls` -> `iomx.commands.serial.ls`
 """
 
 import serial.tools.list_ports
@@ -72,7 +48,7 @@ MUSIC_PLAYING = False
 
 
 def scan_serial_ports():
-    """___"""
+    """Enumerate serial ports while filtering excluded names."""
     ports = []
     for port in serial.tools.list_ports.comports():
         excluded_found = False
@@ -95,7 +71,7 @@ def list_serial_ports():
 
 
 def play_music_nonblocking(start_stop=False):
-    """___"""
+    """Start/stop a background thread to play sounds (best-effort)."""
 
     global MUSIC_THREAD, MUSIC_PLAYING
 
@@ -126,7 +102,7 @@ def play_music_nonblocking(start_stop=False):
 
 
 def monitor_port_availability(ports):
-    """___"""
+    """Monitor a set of ports and play sounds / re-run listing when availability changes."""
     global NB_ITER
     NB_ITER = 0
     all_ports_available_prev = True
@@ -151,7 +127,7 @@ def monitor_port_availability(ports):
 
 
 def lsserial_verbosity_1(ports):
-    """___"""
+    """Verbose per-port details."""
     print("\n\n# SERIAL PORTS DETAILS")
     for counter, port in enumerate(ports):
         print("")
@@ -170,14 +146,14 @@ def lsserial_verbosity_1(ports):
 
 
 def lsserial_verbosity_0(ports):
-    """___"""
+    """Short summary output."""
     print("\n\n# SERIAL PORTS SUMMARY\n")
     for counter, port in enumerate(ports):
         print("- %s. port.device: %s" % (counter, port.device))
 
 
 def main(verbosity=0):
-    """___"""
+    """Main entrypoint used by the CLI. Returns the list of ports found."""
     ports = scan_serial_ports()
     if len(ports) == 0:
         print("\n\n# NO SERIAL PORT FOUND")
@@ -190,18 +166,6 @@ def main(verbosity=0):
 
 
 if __name__ == "__main__":
-
-    """
-USAGE:
-
-lsserial \
-/dev/cu.usbmodem114201 \
-/dev/cu.usbmodem11101  \
-/dev/cu.usbmodem11201  \
-/dev/cu.usbmodem11301  \
-/dev/cu.usbmodem114301 \
-/dev/cu.usbmodem114101 \
-    """
 
     try:
         ports = main(verbosity=1)
