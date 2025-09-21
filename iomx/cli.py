@@ -1,6 +1,7 @@
 import argparse
 import os
 import sys
+import subprocess
 from typing import Optional
 
 VERSION = "0.1.1"
@@ -73,20 +74,80 @@ def main(argv: Optional[list] = None) -> None:
 
     if args.command == "lsserial":
         try:
-            from iomx.commands.lsserial import list_serial_ports
-        except Exception:
+            import iomx.commands.lsserial as lsmod
+        except ImportError as e:
             print("lsserial utility requires 'pyserial' for best results. Install with: pip install pyserial")
-            # still try to import the module to run fallback
-            try:
-                from iomx.commands.lsserial import list_serial_ports
-            except Exception:
-                return
-        ports = list_serial_ports()
+            print(f"ImportError: {e}")
+            return
+        except Exception:
+            import traceback
+
+            print("Failed to import iomx.commands.lsserial — full traceback below:")
+            traceback.print_exc()
+            return
+
+        # Call the module's main to reproduce the original (verbose) output
+        try:
+            ports = lsmod.main(verbosity=1)
+        except Exception:
+            import traceback
+
+            print("Error while running lsserial.main():")
+            traceback.print_exc()
+            return
+
         if not ports:
             print("No serial ports found")
-        else:
-            for p in ports:
-                print(p)
+            return
+
+        # ports are objects; copy last.device to clipboard (like the original script)
+        last = ports[-1].device if hasattr(ports[-1], "device") else ports[-1]
+        try:
+            import pyperclip
+
+            pyperclip.copy(last)
+            print(f"\n# COPIED TO CLIPBOARD: {last}")
+        except Exception:
+            # Fallback to platform-specific clipboard commands
+            import shutil
+
+            system = sys.platform
+            copied = False
+            if system == "darwin":
+                if shutil.which("pbcopy"):
+                    try:
+                        p = subprocess.Popen(["pbcopy"], stdin=subprocess.PIPE)
+                        p.communicate(str(last).encode())
+                        copied = True
+                    except Exception:
+                        copied = False
+            elif system.startswith("linux"):
+                if shutil.which("xclip"):
+                    try:
+                        p = subprocess.Popen(["xclip", "-selection", "clipboard"], stdin=subprocess.PIPE)
+                        p.communicate(str(last).encode())
+                        copied = True
+                    except Exception:
+                        copied = False
+                elif shutil.which("xsel"):
+                    try:
+                        p = subprocess.Popen(["xsel", "--clipboard", "--input"], stdin=subprocess.PIPE)
+                        p.communicate(str(last).encode())
+                        copied = True
+                    except Exception:
+                        copied = False
+            elif system.startswith("win"):
+                try:
+                    p = subprocess.Popen(["clip"], stdin=subprocess.PIPE)
+                    p.communicate(str(last).encode())
+                    copied = True
+                except Exception:
+                    copied = False
+
+            if copied:
+                print(f"\n# COPIED TO CLIPBOARD (fallback): {last}")
+            else:
+                print(f"\n# COULD NOT COPY TO CLIPBOARD — last port: {last}")
         return
 
     if args.command == "version":
